@@ -95,7 +95,5 @@ if __name__ == '__main__':
             time_on_clock = time_on_clock + datetime.timedelta(minutes=1)
     except KeyboardInterrupt:
         print("Received a keyboard interrupt, cleaning up GPIO")
-    except:
-        print("Received an unexpected interrupt, cleaning up GPIO")
     finally:
         GPIO.cleanup()
