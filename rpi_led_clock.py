@@ -93,6 +93,8 @@ if __name__ == '__main__':
         starting_time = datetime.datetime.now()
     if args.dry_run or gpio_present is False:
         dry_run = True
+    else:
+        dry_run = False
     if not dry_run:
         gpio_setup(channels)
     x = LedClock(dry_run=dry_run)
@@ -106,4 +108,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Received a keyboard interrupt, cleaning up GPIO")
     finally:
-        GPIO.cleanup()
+        in not dry_run:
+            GPIO.cleanup()
