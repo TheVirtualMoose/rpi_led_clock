@@ -95,10 +95,10 @@ if __name__ == '__main__':
         dry_run = True
     else:
         dry_run = False
-    if not dry_run:
-        gpio_setup(channels)
-    x = LedClock(dry_run=dry_run)
     try:
+        if not dry_run:
+            gpio_setup(channels)
+        x = LedClock(dry_run=dry_run)
         display_thread = threading.Thread(target=start_display, args=(starting_time,), daemon=True)
         display_thread.start()
         # Flask will start here
