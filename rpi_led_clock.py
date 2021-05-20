@@ -2,7 +2,12 @@
 import argparse
 import datetime
 import time
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+    gpio_present = True
+except ModuleNotFoundError:
+    print("RPi.GPIO module not present, forcing a dry run")
+    gpio_present = False
 
 
 # Channels in use that need to be set as output.
@@ -77,9 +82,11 @@ if __name__ == '__main__':
         time_on_clock = datetime.datetime(100, 1, 1, int(args.time[0:2]), int(args.time[2:]), 00)
     else:
         time_on_clock = datetime.datetime.now()
-    if not args.dry_run:
+    if args.dry_run or gpio_present is False:
+        dry_run = True
+    if not dry_run:
         gpio_setup(channels)
-    x = LedClock(dry_run=args.dry_run)
+    x = LedClock(dry_run=dry_run)
     try:
         while True:
             x.display = time_on_clock.strftime("%H%M")
