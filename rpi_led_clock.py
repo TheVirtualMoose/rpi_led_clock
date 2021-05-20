@@ -108,5 +108,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Received a keyboard interrupt, cleaning up GPIO")
     finally:
-        in not dry_run:
+        if not dry_run:
             GPIO.cleanup()
