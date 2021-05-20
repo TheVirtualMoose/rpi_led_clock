@@ -77,12 +77,15 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def start_display(time_on_clock):
+def start_display(new_time):
     while True:
-        x.display = time_on_clock.strftime("%H%M")
-        x.update_display()
+        if new_time.strftime("%H%M") != x.display:
+            x.display = new_time.strftime("%H%M")
+            x.update_display()
+            print(f"setting display to {new_time.strftime('%H%M')}")
         time.sleep(1)
-        time_on_clock = time_on_clock + datetime.timedelta(seconds=1)
+        new_time = new_time + datetime.timedelta(seconds=1)
+
 
 
 if __name__ == '__main__':
