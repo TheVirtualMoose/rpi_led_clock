@@ -2,6 +2,7 @@
 import argparse
 import datetime
 import time
+import threading
 try:
     import RPi.GPIO as GPIO
     gpio_present = True
@@ -76,23 +77,32 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def start_display(time_on_clock):
+    while True:
+        x.display = time_on_clock.strftime("%H%M")
+        x.update_display()
+        time.sleep(1)
+        time_on_clock = time_on_clock + datetime.timedelta(seconds=1)
+
+
 if __name__ == '__main__':
     args = parse_arguments()
     if parse_arguments().time is not None:
-        time_on_clock = datetime.datetime(100, 1, 1, int(args.time[0:2]), int(args.time[2:]), 00)
+        starting_time = datetime.datetime(100, 1, 1, int(args.time[0:2]), int(args.time[2:]), 00)
     else:
-        time_on_clock = datetime.datetime.now()
+        starting_time = datetime.datetime.now()
     if args.dry_run or gpio_present is False:
         dry_run = True
     if not dry_run:
         gpio_setup(channels)
     x = LedClock(dry_run=dry_run)
     try:
+        display_thread = threading.Thread(target=start_display, args=(starting_time,), daemon=True)
+        display_thread.start()
+        # Flask will start here
+        print("Starting a stub main loop")
         while True:
-            x.display = time_on_clock.strftime("%H%M")
-            x.update_display()
-            time.sleep(60)
-            time_on_clock = time_on_clock + datetime.timedelta(minutes=1)
+            time.sleep(5)
     except KeyboardInterrupt:
         print("Received a keyboard interrupt, cleaning up GPIO")
     finally:
