@@ -9,8 +9,10 @@ try:
 except ModuleNotFoundError:
     print("RPi.GPIO module not present, forcing a dry run")
     gpio_present = False
+from flask import Flask, request, render_template
 
 
+app = Flask(__name__)
 # Channels in use that need to be set as output.
 channels = list(range(0, 28))
 
@@ -77,8 +79,25 @@ def parse_arguments():
     return parser.parse_args()
 
 
+@app.route('/', methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        # TODO Input validation
+        global time_input
+        time_input = request.form["time"]
+        global update_needed
+        update_needed = True
+    return render_template('index.html')
+
+
 def start_display(new_time):
+    global time_input
+    global update_needed
+    update_needed = False
     while True:
+        if update_needed:
+            new_time = datetime.datetime(100, 1, 1, int(time_input[0:2]), int(time_input[2:]), 00)
+            update_needed = False
         if new_time.strftime("%H%M") != x.display:
             x.display = new_time.strftime("%H%M")
             x.update_display()
@@ -104,10 +123,7 @@ if __name__ == '__main__':
         x = LedClock(dry_run=dry_run)
         display_thread = threading.Thread(target=start_display, args=(starting_time,), daemon=True)
         display_thread.start()
-        # Flask will start here
-        print("Starting a stub main loop")
-        while True:
-            time.sleep(5)
+        app.run(host="0.0.0.0", port=1080)
     except KeyboardInterrupt:
         print("Received a keyboard interrupt, cleaning up GPIO")
     finally:
