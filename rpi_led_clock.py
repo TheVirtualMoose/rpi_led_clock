@@ -113,7 +113,8 @@ def gpio_setup(channel_list):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Display time on a 7-segment LED clock")
-    parser.add_argument("time", metavar="HHMM", type=str, nargs="?", help="Hour to display on the clock")
+    parser.add_argument("--time", metavar="HHMM", type=str, nargs="?", help="Hour to display on the clock. If not "
+                                                                            "specified, clock will start blanked")
     parser.add_argument("--dry_run", action="store_true", help="If set, do a dry run and do not set any GPIO pins")
     parser.add_argument("--type", action="store", type=str, nargs="?", default="tube",
                         help='Type of clock. Allowed values "tube" (default) and "led"')
@@ -152,14 +153,18 @@ def start_display(new_time):
     global update_needed
     global blank_requested
     update_needed = False
-    blank_requested = False
     display_blanked = False
+    if new_time is None:
+        blank_requested = True
+        new_time = datetime.datetime.now()
+    else:
+        blank_requested = False
     while True:
         if update_needed:
             new_time = datetime.datetime(100, 1, 1, int(time_input[0:2]), int(time_input[2:]), 00)
             update_needed = False
             display_blanked = False
-        if new_time.strftime("%H%M") != x.display and not blank_requested:
+        if not blank_requested and new_time.strftime("%H%M") != x.display:
             x.display = new_time.strftime("%H%M")
             x.update_display()
             print(f"setting display to {new_time.strftime('%H%M')}")
@@ -172,10 +177,13 @@ def start_display(new_time):
 
 if __name__ == '__main__':
     args = parse_arguments()
-    if parse_arguments().time is not None:
+    if args.time is None:
+        starting_time = None
+    elif is_time(args.time):
         starting_time = datetime.datetime(100, 1, 1, int(args.time[0:2]), int(args.time[2:]), 00)
     else:
-        starting_time = datetime.datetime.now()
+        print(f"Unrecognised --time argument, exiting")
+        sys.exit(1)
     if args.dry_run or gpio_present is False:
         dry_run = True
     else:
