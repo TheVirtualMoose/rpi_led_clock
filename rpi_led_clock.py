@@ -123,8 +123,7 @@ def parse_arguments():
 def is_time(string):
     if not len(string) == 4:
         return False
-    elif string[0] in [str(i) for i in range(3)] and string[1] in [str(i) for i in range(10)] and \
-            string[2] in [str(i) for i in range(7)] and string[3] in [str(i) for i in range(10)]:
+    elif string[0:2] in [str(i) for i in range(24)] and string[2:4] in [str(i) for i in range(60)]:
         return True
     else:
         return False
