@@ -120,14 +120,31 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def is_time(string):
+    if not len(string) == 4:
+        return False
+    elif string[0] in [str(i) for i in range(3)] and string[1] in [str(i) for i in range(10)] and \
+            string[2] in [str(i) for i in range(7)] and string[3] in [str(i) for i in range(10)]:
+        return True
+    else:
+        return False
+
+
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        # TODO Input validation
         global time_input
-        time_input = request.form["time"]
         global update_needed
-        update_needed = True
+        global blank_requested
+        if is_time(request.form["time"]):
+            time_input = request.form["time"]
+            update_needed = True
+            blank_requested = False
+        elif (request.form["time"]) == "":
+            blank_requested = True
+            print("Requesting blank")
+        else:
+            print(f"Unrecognised input {request.form['time']}")
     return render_template('index.html')
 
 
