@@ -4,14 +4,15 @@ import datetime
 import time
 import threading
 import sys
+
 try:
     import RPi.GPIO as GPIO
+
     gpio_present = True
 except ModuleNotFoundError:
     print("RPi.GPIO module not present, forcing a dry run")
     gpio_present = False
 from flask import Flask, request, render_template
-
 
 app = Flask(__name__)
 # Channels in use that need to be set as output.
@@ -45,6 +46,7 @@ digits = {
     "9": (1, 1, 1, 1, 0, 1, 1),  # 9
 }
 
+
 class LedClock:
     def __init__(self, dry_run=0):
         self.display = ""
@@ -66,13 +68,14 @@ class LedClock:
         for i in range(0, 4):
             self.set_digit(self.display[i], i)
 
+
 class TubeClock(LedClock):
     def __init__(self, dry_run=0):
         super().__init__(dry_run)
         self.digit_mapping = {
             0: (None, 0, 1),
             1: (2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
-            2: (None, 12, 13, 14, 15, 16, 17),
+            2: (12, 13, 14, 15, 16, 17),
             3: (18, 19, 20, 21, 22, 23, 24, 25, 26, 27)
         }
 
@@ -80,7 +83,9 @@ class TubeClock(LedClock):
         if self.dry_run:
             for i in self.digit_mapping[digit_position]:
                 if i is None:
-                    print(f"Digit {self.digit_mapping[digit_position].index(i)} at position {digit_position} not enabled, skipping")
+                    print(
+                        f"Digit {self.digit_mapping[digit_position].index(i)} at position {digit_position} not "
+                        f"enabled, skipping")
                 elif self.digit_mapping[digit_position].index(i) != int(digit):
                     print(f"Setting GPIO pin {i} to GPIO.HIGH")
                 elif self.digit_mapping[digit_position].index(i) == int(digit):
@@ -104,7 +109,8 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Display time on a 7-segment LED clock")
     parser.add_argument("time", metavar="HHMM", type=str, nargs="?", help="Hour to display on the clock")
     parser.add_argument("--dry_run", action="store_true", help="If set, do a dry run and do not set any GPIO pins")
-    parser.add_argument("--type", action="store", type=str, nargs="?", default="tube", help='Type of clock. Allowed values "tube" (default) and "led"')
+    parser.add_argument("--type", action="store", type=str, nargs="?", default="tube",
+                        help='Type of clock. Allowed values "tube" (default) and "led"')
     return parser.parse_args()
 
 
@@ -133,7 +139,6 @@ def start_display(new_time):
             print(f"setting display to {new_time.strftime('%H%M')}")
         time.sleep(1)
         new_time = new_time + datetime.timedelta(seconds=1)
-
 
 
 if __name__ == '__main__':
