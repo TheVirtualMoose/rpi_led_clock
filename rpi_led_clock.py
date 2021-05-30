@@ -14,6 +14,9 @@ except ModuleNotFoundError:
     gpio_present = False
 from flask import Flask, request, render_template
 
+global time_input
+global update_needed
+global blank_requested
 app = Flask(__name__)
 # Channels in use that need to be set as output.
 channels = list(range(0, 28))
