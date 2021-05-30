@@ -92,17 +92,17 @@ class TubeClock(LedClock):
                     print(
                         f"Digit {self.digit_mapping[digit_position].index(i)} at position {digit_position} not "
                         f"enabled, skipping")
-                elif self.digit_mapping[digit_position].index(i) != int(digit):
+                elif str(self.digit_mapping[digit_position].index(i)) != digit:
                     print(f"Setting GPIO pin {i} to GPIO.HIGH")
-                elif self.digit_mapping[digit_position].index(i) == int(digit):
+                elif str(self.digit_mapping[digit_position].index(i)) == digit:
                     print(f"Setting GPIO pin {i} to GPIO.LOW")
         else:
             for i in self.digit_mapping[digit_position]:
                 if i is None:
                     continue
-                elif self.digit_mapping[digit_position].index(i) != int(digit):
+                elif str(self.digit_mapping[digit_position].index(i)) != digit:
                     GPIO.output(self.digit_mapping[digit_position][digit], GPIO.HIGH)
-                elif self.digit_mapping[digit_position].index(i) == int(digit):
+                elif str(self.digit_mapping[digit_position].index(i)) == digit:
                     GPIO.output(self.digit_mapping[digit_position][digit], GPIO.LOW)
 
 
