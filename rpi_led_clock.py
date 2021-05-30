@@ -185,16 +185,16 @@ if __name__ == '__main__':
         print(f"Unrecognised --time argument, exiting")
         sys.exit(1)
     if args.dry_run or gpio_present is False:
-        dry_run = True
+        force_dry_run = True
     else:
-        dry_run = False
+        force_dry_run = False
     try:
-        if not dry_run:
+        if not force_dry_run:
             gpio_setup(channels)
         if args.type == "tube":
-            x = TubeClock(dry_run=dry_run)
+            x = TubeClock(dry_run=force_dry_run)
         elif args.type == "led":
-            x = LedClock(dry_run=dry_run)
+            x = LedClock(dry_run=force_dry_run)
         else:
             print("Unknown clock type, aborting")
             sys.exit(1)
@@ -204,5 +204,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Received a keyboard interrupt, cleaning up GPIO")
     finally:
-        if not dry_run:
+        if not force_dry_run:
             GPIO.cleanup()
