@@ -44,6 +44,7 @@ digits = {
     "7": (1, 1, 1, 0, 0, 0, 0),  # 7
     "8": (1, 1, 1, 1, 1, 1, 1),  # 8
     "9": (1, 1, 1, 1, 0, 1, 1),  # 9
+    " ": (0, 0, 0, 0, 0, 0, 0),  # blank display
 }
 
 
@@ -67,6 +68,11 @@ class LedClock:
     def update_display(self):
         for i in range(0, 4):
             self.set_digit(self.display[i], i)
+
+    def blank_display(self):
+        print("Blanking display and stopping updates until a new time is input")
+        self.display = "    "
+        self.update_display()
 
 
 class TubeClock(LedClock):
@@ -128,15 +134,22 @@ def index():
 def start_display(new_time):
     global time_input
     global update_needed
+    global blank_requested
     update_needed = False
+    blank_requested = False
+    display_blanked = False
     while True:
         if update_needed:
             new_time = datetime.datetime(100, 1, 1, int(time_input[0:2]), int(time_input[2:]), 00)
             update_needed = False
-        if new_time.strftime("%H%M") != x.display:
+            display_blanked = False
+        if new_time.strftime("%H%M") != x.display and not blank_requested:
             x.display = new_time.strftime("%H%M")
             x.update_display()
             print(f"setting display to {new_time.strftime('%H%M')}")
+        if blank_requested and not display_blanked:
+            x.blank_display()
+            display_blanked = True
         time.sleep(1)
         new_time = new_time + datetime.timedelta(seconds=1)
 
