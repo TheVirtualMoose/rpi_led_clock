@@ -101,12 +101,12 @@ class TubeClock(LedClock):
                 if self.dry_run:
                     print(f"Setting GPIO pin {i} to GPIO.HIGH")
                 else:
-                    GPIO.output(self.digit_mapping[digit_position][digit], GPIO.HIGH)
+                    GPIO.output(i, GPIO.HIGH)
             elif str(self.digit_mapping[digit_position].index(i)) == digit:
                 if self.dry_run:
                     print(f"Setting GPIO pin {i} to GPIO.LOW")
                 else:
-                    GPIO.output(self.digit_mapping[digit_position][digit], GPIO.LOW)
+                    GPIO.output(i, GPIO.LOW)
 
 
 def gpio_setup(channel_list):
