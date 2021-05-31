@@ -89,23 +89,23 @@ class TubeClock(LedClock):
         }
 
     def set_digit(self, digit, digit_position):
-        if self.dry_run:
-            for i in self.digit_mapping[digit_position]:
-                if i is None:
+        for i in self.digit_mapping[digit_position]:
+            if i is None:
+                if self.dry_run:
                     print(
                         f"Digit {self.digit_mapping[digit_position].index(i)} at position {digit_position} not "
                         f"enabled, skipping")
-                elif str(self.digit_mapping[digit_position].index(i)) != digit:
-                    print(f"Setting GPIO pin {i} to GPIO.HIGH")
-                elif str(self.digit_mapping[digit_position].index(i)) == digit:
-                    print(f"Setting GPIO pin {i} to GPIO.LOW")
-        else:
-            for i in self.digit_mapping[digit_position]:
-                if i is None:
+                else:
                     continue
-                elif str(self.digit_mapping[digit_position].index(i)) != digit:
+            elif str(self.digit_mapping[digit_position].index(i)) != digit:
+                if self.dry_run:
+                    print(f"Setting GPIO pin {i} to GPIO.HIGH")
+                else:
                     GPIO.output(self.digit_mapping[digit_position][digit], GPIO.HIGH)
-                elif str(self.digit_mapping[digit_position].index(i)) == digit:
+            elif str(self.digit_mapping[digit_position].index(i)) == digit:
+                if self.dry_run:
+                    print(f"Setting GPIO pin {i} to GPIO.LOW")
+                else:
                     GPIO.output(self.digit_mapping[digit_position][digit], GPIO.LOW)
 
 
